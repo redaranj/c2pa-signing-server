@@ -1,0 +1,68 @@
+service: c2pa-signing-server
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'dev'}
+  environment:
+    SIGNING_SERVER_TOKEN: ${env:SIGNING_SERVER_TOKEN, ''}
+    USE_KMS: ${env:USE_KMS, 'false'}
+    KMS_KEY_ID: ${env:KMS_KEY_ID, ''}
+    USE_AWS_SECRETS: ${env:USE_AWS_SECRETS, 'false'}
+    SIGNING_CREDENTIALS_SECRET: ${env:SIGNING_CREDENTIALS_SECRET, 'c2pa-signing-credentials'}
+    CA_CREDENTIALS_SECRET: ${env:CA_CREDENTIALS_SECRET, 'c2pa-ca-credentials'}
+    ENVIRONMENT: ${self:provider.stage}
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - kms:Sign
+          Resource:
+            - !Sub 'arn:aws:kms:${AWS::Region}:${AWS::AccountId}:key/*'
+        - Effect: Allow
+          Action:
+            - secretsmanager:GetSecretValue
+          Resource:
+            - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:c2pa-*'
+
+functions:
+  api:
+    handler: dist/handlers/index.handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /
+          method: get
+          cors: true
+      - http:
+          path: /health
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/certificates/sign
+          method: post
+          cors: true
+      - http:
+          path: /api/v1/c2pa/configuration
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/c2pa/sign
+          method: post
+          cors: true
+      - http:
+          path: /{proxy+}
+          method: any
+          cors: true
+
+plugins:
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 3000
+    lambdaPort: 3002

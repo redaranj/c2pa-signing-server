@@ -1,0 +1,40 @@
+{
+  "name": "c2pa-signing-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "node build.js",
+    "compile": "tsc",
+    "dev": "tsc -w",
+    "deploy": "npm run build && serverless deploy",
+    "local": "serverless offline",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/redaranj/c2pa-signing-server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/redaranj/c2pa-signing-server/issues"
+  },
+  "homepage": "https://github.com/redaranj/c2pa-signing-server#readme",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.152",
+    "@types/node": "^24.5.2",
+    "esbuild": "^0.25.10",
+    "serverless": "^4.19.1",
+    "serverless-offline": "^14.4.0",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@aws-sdk/client-kms": "^3.896.0",
+    "@aws-sdk/client-secrets-manager": "^3.896.0",
+    "@contentauth/c2pa-node": "github:contentauth/c2pa-node-v2",
+    "@smithy/util-utf8": "^4.1.0",
+    "uuid": "^13.0.0"
+  }
+}
